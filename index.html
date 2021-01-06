@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+  <head>
+
+
+    <title>JS VIDEO COMPRESSOR TEST</title>
+    <meta name="viewport" content="target-densitydpi=150, width=device-width, height=device-height, initial-scale=1, user-scalable=no, minimal-ui">
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript" src="readandcompress.js"></script>
+
+  </head>
+
+  <body>
+    
+        <h1>REALTIME VIDEO COMPRESSOR:</h1>
+
+        <p>As for the images, the attempt is to find a simple solution for "client side" video resizing, before sending it to the server (saving bandwidth on the network)</p>
+
+        <h2>Explanation:</h2>
+        <p>This realtime compressor uses web streaming <a href="https://developer.mozilla.org/en-US/docs/Web/API/Media_Streams_API" target="_blank">MediaCapture</a> for continuous recording from one (or more - theoretically -) specific source.</p>
+        <p>It takes the data stream (resampled) from a specific canvas (with resolution and fps different from the original video) and specific audio.</p>
+
+        <p><b>PROBLEMS:</b></p>
+        <p><i>it's not very cross compatible, work on Firefox and Chrome;  Sound stop when mute tab of the browser; it stops or record badly when change the tab of browser;</i></p>
+
+        <details>
+            <summary><b>LINKS:</b></summary>
+            <a href="https://zhirzh.github.io/20170902-write-a-stream-ripper-with-mediarecorder/" target="_blank">BEST ALTERNATIVE</a><br />
+            <a href="https://github.com/webrtc/samples/blob/gh-pages/src/content/capture/canvas-record/js/main.js" target="_blank">BEST ALTERNATIVE</a><br />
+            <a href="https://webrtc.github.io/samples/src/content/capture/canvas-record/" target="_blank">WEBRT CANVAS REC</a><br />
+            <a href="https://webrtc.github.io/samples/" target="_blank">WEBRT SAMPLE</a><br />
+            <a href="https://stackoverflow.com/questions/59846230/mediarecorder-switch-video-tracks" target="_blank">STACKOVERFLOW SOLUTIONS</a><br />
+            <a href="https://gist.github.com/josephrocca/ec073b3a90f936bec87bbd8e3e4c3486" target="_blank">VIDEO TO CANVAS + RECORD</a><br />
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject" target="_blank">HTML SRCOBJECT</a><br />
+            <a href="https://jsfiddle.net/fm7h5snu/1/" target="_blank">VIDEO TO AUDIO</a><br />
+            <a href="https://stackoverflow.com/questions/49140159/extracting-audio-from-a-video-file" target="_blank">STACKOVERFLOW: GET AUDIO</a><br />
+            <a href="https://stackoverflow.com/questions/39302814/mediastream-capture-canvas-and-audio-simultaneously" target="_blank">STACKOVERFLOW: MEDIASTREAM</a><br />
+            <a href="https://www.webrtc-experiment.com/" target="_blank">WRT DEMOS</a><br />
+            <a href="https://stackoverflow.com/questions/39874867/canvas-recording-using-capturestream-and-mediarecorder" target="_blank">STACKOVERFLOW: CANVAS + RECORD</a><br />
+            <a href="https://stackoverflow.com/questions/18509385/html-5-video-recording-and-storing-a-stream/18509824" target="_blank">STACKOVERFLOW: HTML STREAM</a><br />
+            <a href="https://ericbidelman.tumblr.com/post/31486670538/creating-webm-video-from-getusermedia" target="_blank">GET USER MEDIA</a><br />
+            <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Audio_and_video_manipulation" target="_blank">AUDIO & VIDEO MANIPULATION JAVASCRIPT</a><br />
+            <a href="https://github.com/SMUsamaShah/CanvasRecorder/blob/master/CanvasRecorder.js" target="_blank">CANVAS RECORDER</a><br />
+            <a href="https://medium.com/@amatewasu/how-to-record-a-canvas-element-d4d0826d3591" target="_blank">HOW TO RECORD CANVAS</a><br />
+            <a href="https://www.youtube.com/watch?v=K6L38xk2rkk&list=RDCMUCTBGXCJHORQjivtgtMsmkAQ&start_radio=1" target="_blank">YOUTUBE: Capturing and Saving User Audio or Video with JavaScript</a><br />
+            <a href="https://developers.google.com/web/updates/2016/10/capture-stream" target="_blank">Capture a MediaStream From a Canvas, Video or Audio Element</a><br />
+            <a href="https://www.youtube.com/watch?v=K6L38xk2rkk" target="_blank">YOUTUBE: Capturing and Saving User Audio or Video with JavaScript</a><br />
+            <a href="https://codepen.io/zackexplosion/pen/BNvxZP?editors=1010" target="_blank">CODEPEN EXPERIMENT</a><br />
+            <a href="https://github.com/Kagami/ffmpeg.js/" target="_blank">FFMPEG<a><br />
+            <a href="https://gist.github.com/ilblog/5fa2914e0ad666bbb85745dbf4b3f106" target="_blank">FFMPEG</a><br />
+        </details>
+
+        
+        <hr>
+
+            <div class="button-file">
+                <input type="file"/>
+                <a id="videolink" href="" target="_blank">View Original Video (after readed)</a>
+            </div>
+
+            <hr>
+
+            <div>
+                <small>The scaling will be proportioned with a ratio.</small><br/>
+                <p>
+                    set fps of recording : &nbsp;&nbsp;&nbsp;&nbsp;<input id="fps" type="number" value="16"><br>
+                    max resize px width :&nbsp;&nbsp;&nbsp;&nbsp;<input id="maxWidth" type="number" value="250"><br>
+                    max resize px height :&nbsp;&nbsp;&nbsp;<input id="maxHeight" type="number" value="250"><br/>
+                    set downrate of bitrate : <input id="downrate" type="number" value="6"><mall>(1 mega bit of sec / your downrate... 6 is really low quality)</small>
+                </p>
+            </div>
+
+            <a id="ConvertNow">Convert now</a>
+
+        <hr>
+
+        <div class="compressiondisplay">
+
+            <p class="messagebar"></p>
+
+            <div>
+                <p>Canvas Compression</p>
+                <small>
+                    Streming preview:<br>
+                    The original video flow is projected into the canvas... Canvas reduces fps and size of the strem.<br>
+                    The audio is getted by original video blob and directly added on streming (you cant listen it).<br>
+                    You will be able to see the bitrate compression (audio and video) of the "mediaRecorder" once the recording is finished.</small><br/>
+                <div class="placeholderdimesion">
+                    <canvas  id="videotest"></canvas>
+                </div>
+                <br>
+            </div>
+
+            <div>
+                <p>Video Result (resolution+bitrate) :</p>
+                <div class="placeholderdimesion">
+                    <video id="compressedvideo"></video>
+                </div>
+            </div>
+
+        </div>
+
+  </body>
+
+    <style>
+
+        html
+        {
+            margin: 0;
+            padding:20px;
+            background: #ccc;
+            font-family: sans-serif; 
+            color: #161616; 
+            font-size: 13px;
+        }
+        body
+        {
+            margin: 0 auto;
+            max-width: 1000px;
+            padding: 20px;
+            border-radius: 20px;
+            background: white;
+        }
+
+        h1
+        {
+            font-weight: 900;
+        }
+        small
+        {
+            font-size: 10px;
+            color: #4a6b75;
+        }
+
+        p
+        {
+            margin-top: 10px;
+        }
+        p+p
+        {
+            margin-top: 0px;
+        }
+        p>i
+        {
+            color:red;
+        }
+
+        a
+        {
+            font-weight: bold;
+            color:#263971;
+        }
+
+        hr
+        {
+            margin: 20px 0 20px 0;
+        }
+
+        .placeholderdimesion
+        {
+            background: #ccc;
+            width:100%;
+            min-height: 25px;
+            display: block;
+        }
+
+        .button-file
+        {
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        #ConvertNow
+        {
+            background: #1c4e88;
+            color: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+    </style>
+
+</html>
